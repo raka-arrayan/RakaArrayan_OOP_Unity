@@ -6,6 +6,20 @@ public class Player : MonoBehaviour
 {
     private PlayerMovement playerMovement;//untuk mengontrol gerakan pemain
     private Animator animator;//untuk mengendalikan animasi efek mesin 
+    public static Player Instance { get; private set; }//singleton instance
+
+    void Awake()
+    {
+        // Implementasi Singleton
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     void Start()//method khusus yang dijalankan sekali ketika game mulai atau ketika objek ini pertama kali muncul di game
     {
@@ -35,4 +49,3 @@ public class Player : MonoBehaviour
         }
     }
 }
-
