@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "CS_GG_RakaArrayan_2306161800_OOP7.sln"
+    "dotnet.defaultSolution": "Myproject.sln"
 }

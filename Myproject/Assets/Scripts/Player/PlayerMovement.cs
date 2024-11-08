@@ -68,11 +68,15 @@ public class PlayerMovement : MonoBehaviour //class ini bertanggung jawab untuk 
         Vector2 maxLimit = (Vector2)Camera.main.ViewportToWorldPoint(Vector2.one) - new Vector2(0.225f, 0.500f);
 
         //ViewportToWorldPoint mengonversi koordinat dari "viewport space" ke "world space."
-        //World space adalah sistem koordinat global untuk seluruh dunia permainan.baik 2D atau 3D
+        //World space adalah sistem koordinat global untuk seluruh dunia permainan baik 2D atau 3D
         //Vector2.zero menunjukkan sudut kiri bawah layar (koordinat viewport (0,0)), 
         //yang kemudian dikonversi menggunakan ViewportToWorldPoint.
-        //Vector2.zero menunjukkan sudut kiri bawah layar (koordinat viewport (0,0)), yang kemudian dikonversi ke koordinat dunia menggunakan ViewportToWorldPoint.
+
+        //Vector2.zero menunjukkan sudut kiri bawah layar (koordinat viewport (0,0)), yang kemudian dikonversi  menggunakan ViewportToWorldPoint.
         //Vector2.one mewakili sudut kanan atas layar (koordinat viewport (1,1)).
+
+        //new Vector2(0.225f, 0.1005f) dan new Vector2(0.225f, 0.500f) adalah nilai offset untuk menyesuaikan batas 
+        //gerakan objek pemain agar tidak terlalu dekat dengan tepi layar.
 
 
         // Membatasi posisi pesawat agar tetap berada di dalam batas kamera yang sudah disesuaikan
@@ -94,7 +98,7 @@ public class PlayerMovement : MonoBehaviour //class ini bertanggung jawab untuk 
         // jika salah maka akan return vektor yang berisi nilai gesekan saat berhenti (membaca dari stopFrictionX dan stopFrictionY).
             new Vector2(stopFrictionX, stopFrictionY);
             
-//Vector2.zero merepresentasikan vektor (0, 0), yang berarti tidak ada gerakan (baik ke kiri/kanan maupun atas/bawah).
+        //Vector2.zero merepresentasikan vektor (0, 0), yang berarti tidak ada gerakan (baik ke kiri/kanan maupun atas/bawah).
     }
 
     public bool IsMoving()
