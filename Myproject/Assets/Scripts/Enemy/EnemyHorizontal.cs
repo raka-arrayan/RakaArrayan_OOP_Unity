@@ -2,43 +2,53 @@ using UnityEngine;
 
 public class EnemyHorizontal : Enemy
 {
-    public float speed = 2.0f;//menentukan kecepatan musuh bergerak secara horizontal.
-    protected bool movingRight;//menandakan apakah musuh bergerak ke arah kanan atau tidak.
+    private bool movingRight;
+    private Vector3 screenBounds;
 
-    protected override void Start()
+    public override void Awake()
     {
-        base.Start();
+        base.Awake();
 
-        if (Random.Range(0, 2) == 0)//menghasilkan angka acak antara 0 dan 1
+        if (mainCamera != null)
         {
-            transform.position = new Vector3(-10, transform.position.y, transform.position.z); 
-            movingRight = true;
+            movingRight = Random.value > 0.5f;
+
+            float spawnY = Random.Range(Screen.height / 2, Screen.height-50);
+            float spawnX = movingRight ? Screen.width + 50 : -50;
+            Vector3 spawnPosition = mainCamera.ScreenToWorldPoint(new Vector3(spawnX, spawnY, mainCamera.transform.position.z));
+            transform.position = new Vector3(spawnPosition.x, spawnPosition.y, 0);
         }
         else
         {
-            transform.position = new Vector3(10, transform.position.y, transform.position.z); 
-            movingRight = false;
+            Debug.LogError(this + " tidak memiliki MainCamera");
         }
-        //Nilai -10 dan 10 digunakan sebagai batas layar kiri dan kanan, tetapi bisa disesuaikan dengan ukuran layar game.
     }
 
-    protected void Update()//untuk menggerakkan musuh secara horizontal di layar
+    public void Start()
     {
-        if (movingRight)
+        if (mainCamera != null)
         {
-            transform.Translate(Vector2.right * speed * Time.deltaTime);
-            if (transform.position.x > 8)
-            {
-                movingRight = false;//musuh akan bergerak ke kiri
-            }
+            screenBounds = mainCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, mainCamera.transform.position.z));
         }
         else
         {
-            transform.Translate(Vector2.left * speed * Time.deltaTime);
-            if (transform.position.x < -8)
-            {
-                movingRight = true;//musuh akan bergerak ke kanan 
-            }
+            Debug.LogError(this + " tidak memiliki MainCamera");
+        }
+    }
+
+    public override void Move()
+    {
+        if (mainCamera == null) return; 
+
+        rb.velocity = new Vector2(movingRight ? moveSpeed : -moveSpeed, rb.velocity.y);
+
+        if (transform.position.x > screenBounds.x)
+        {
+            movingRight = false;
+        }
+        else if (transform.position.x < -screenBounds.x)
+        {
+            movingRight = true;
         }
     }
 }

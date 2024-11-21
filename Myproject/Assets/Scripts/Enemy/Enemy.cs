@@ -2,41 +2,39 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public int Level;//level dari musuh
+    public int level;
+    public Sprite enemySprite;
+    protected Rigidbody2D rb;
+    public float moveSpeed = 2f;
 
-    private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer;
+    public Camera mainCamera;
 
-    // Start ini akan dipanggil satu kali ketika objek musuh pertama kali diaktifkan dalam game.
-    protected virtual void Start()
+    public virtual void Awake()
     {
-        //menambahkan komponen Rigidbody2D ke objek
-        rb = gameObject.AddComponent<Rigidbody2D>();
-        //menambahkan komponen SpriteRenderer ke objek untuk menampilkan sprite.
-        spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0;
 
-        
-        rb.isKinematic = true;//Berarti musuh tidak akan terpengaruh oleh gaya atau benturan fisik
-        rb.gravityScale = 0;//menonaktifkan gravitasi
-
-        
-        spriteRenderer.sprite = Resources.Load<Sprite>("path_to_your_sprite");
-
-        
-        GameObject player = GameObject.FindGameObjectWithTag("Player");//mencari objek pemain di dalam game dengan tag "Player".
-        if (player != null)
+        if (mainCamera == null)
         {
-            //maka skrip menghitung arah dari musuh ke pemain
-            Vector3 direction = player.transform.position - transform.position;
-            transform.right = -direction;
+            mainCamera = Camera.main;
+            if (mainCamera == null)
+            {
+                Debug.LogError("Tidak ada camera pada " + this);
+            }
         }
     }
 
-    //dipanggil ketika musuh bertabrakan dengan objek lain.
-    void OnCollisionEnter2D(Collision2D collision)
+    public void SetSprite(Sprite sprite)
     {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-        }
+        GetComponent<SpriteRenderer>().sprite = sprite;
+    }
+
+    public virtual void Move()
+    {
+    }
+
+    void Update()
+    {
+        Move();
     }
 }

@@ -1,50 +1,50 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyTargeting : Enemy
 {
-    private Transform player;
-    private float speed = 2f;
-    private float minX, maxX, minY, maxY;
+    public Transform player;
 
-    void Start()
+    public override void Awake()
     {
-        // Mendapatkan transform pemain dengan tag "Player"
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        base.Awake();
 
-        // Mendapatkan batas layar menggunakan kamera
-        minX = Camera.main.ViewportToWorldPoint(Vector3.zero).x + 1f;
-        maxX = Camera.main.ViewportToWorldPoint(new Vector3(1, 0, 0)).x - 1f;
-        minY = Camera.main.ViewportToWorldPoint(Vector3.zero).y + 1f;
-        maxY = Camera.main.ViewportToWorldPoint(new Vector3(0, 1, 0)).y - 1f;
-
-        // Menentukan posisi spawn musuh secara acak di sepanjang batas layar
-        float spawnX = Random.value < 0.5f ? minX : maxX;
-        float spawnY = Random.Range(minY, maxY);
-        transform.position = new Vector3(spawnX, spawnY, transform.position.z);
-    }
-
-    void Update()
-    {
-        // Jika pemain ada di dalam scene
-        if (player != null)
+        GameObject playerObject = GameObject.FindWithTag("Player"); // Mencari tag Player
+        if (playerObject != null)
         {
-            // Menghitung arah menuju pemain dan normalisasi agar kecepatannya konstan
-            Vector3 direction = (player.position - transform.position).normalized;
+            player = playerObject.transform;
+        }
+        else
+        {
+            Debug.LogError(this + " tidak menemukan Player");
+        }
 
-            // Menggerakkan musuh menuju pemain
-            transform.Translate(direction * speed * Time.deltaTime);
+        // Menentukan posisi spawn
+        if (mainCamera != null)
+        {
+            float spawnX = Random.Range(0, Screen.width);
+            Vector3 spawnPosition = mainCamera.ScreenToWorldPoint(new Vector3(spawnX, Screen.height, mainCamera.transform.position.z));
+            transform.position = new Vector3(spawnPosition.x, spawnPosition.y, 0);
+        }
+        else
+        {
+            Debug.LogError(this + " tidak menemukan MainCamera");
         }
     }
 
-    // Ketika musuh bertabrakan dengan pemain
-    private void OnTriggerEnter2D(Collider2D collision)
+    public override void Move()
     {
-        // Jika yang bersentuhan adalah objek dengan tag "Player"
-        if (collision.CompareTag("Player"))
+        if (player == null) return;  // Tidak bergerak jika tidak ada Player
+
+        // Bergerak menuju Player
+        Vector2 direction = (player.position - transform.position).normalized;
+        rb.velocity = direction * moveSpeed;
+    }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        // Menghancurkan EnemyTargeting jika menabrak Player
+        if (collider.gameObject.CompareTag("Player"))
         {
-            // Hancurkan musuh
             Destroy(gameObject);
         }
     }

@@ -3,80 +3,118 @@ using UnityEngine.Pool;
 
 public class Weapon : MonoBehaviour
 {
+    public Transform parentTransform;
+    public WeaponPickup weaponPickup;
+
     [Header("Weapon Stats")]
-    [SerializeField] private float shootIntervalInSeconds = 3f; // Interval antara tembakan
+    [SerializeField] private float shootIntervalInSeconds = 3f;
 
     [Header("Bullets")]
-    public Bullet bulletPrefab; // Bullet yang akan ditembakkan
-    [SerializeField] private Transform bulletSpawnPoint; // Titik spawn untuk Bullet
+    public Bullet bulletPrefab;
+    [SerializeField] private Transform bulletSpawnPoint;
 
     [Header("Bullet Pool")]
-    private IObjectPool<Bullet> objectPool; // Object Pool untuk Bullet
+    private IObjectPool<Bullet> objectPool;
 
-    // Konfigurasi pool
     private readonly bool collectionCheck = false;
     private readonly int defaultCapacity = 30;
     private readonly int maxSize = 100;
+    private float timer;
 
-    private float timer; // Timer untuk tembakan
-    public Transform parentTransform; // Transform dari parent untuk Bullet
-
-    void Start()
+    void Awake()
     {
-        // Membuat Object Pool untuk Bullet
+        // Membuat object pool
         objectPool = new ObjectPool<Bullet>(
-            CreatePooledBullet,   // Fungsi untuk membuat Bullet baru
-            OnTakeFromPool,      // Fungsi saat mengambil Bullet dari pool
-            OnReturnToPool,      // Fungsi saat mengembalikan Bullet ke pool
-            OnDestroyBullet,     // Fungsi saat Bullet dihancurkan
-            collectionCheck,     // Tidak perlu memeriksa koleksi
-            defaultCapacity,     // Kapasitas awal pool
-            maxSize              // Kapasitas maksimal pool
+            CreateBullet,
+            OnGetBullet,
+            OnReleaseBullet,
+            OnDestroyBullet,
+            collectionCheck,
+            defaultCapacity,
+            maxSize
         );
-    }
 
-    // Membuat Bullet baru
-    private Bullet CreatePooledBullet()
-    {
-        Bullet bullet = Instantiate(bulletPrefab); // Membuat instance baru dari Bullet
-        bullet.SetObjectPool(objectPool);           // Set pool untuk Bullet
-        return bullet;
-    }
-
-    // Fungsi saat Bullet diambil dari pool
-    private void OnTakeFromPool(Bullet bullet)
-    {
-        bullet.gameObject.SetActive(true); // Mengaktifkan Bullet saat diambil
-    }
-
-    // Fungsi saat Bullet dikembalikan ke pool
-    private void OnReturnToPool(Bullet bullet)
-    {
-        bullet.gameObject.SetActive(false); // Menonaktifkan Bullet saat dikembalikan
-    }
-
-    // Fungsi untuk menghancurkan Bullet saat pool penuh
-    private void OnDestroyBullet(Bullet bullet)
-    {
-        Destroy(bullet.gameObject); // Hancurkan Bullet jika pool penuh
-    }
-
-    // Update untuk memeriksa interval tembakan
-    void Update()
-    {
-        timer += Time.deltaTime;
-        if (timer >= shootIntervalInSeconds)
+        // Memeriksa dan mengatur BulletSpawnPoint
+        if (bulletSpawnPoint == null)
         {
-            FireBullet(); // Panggil fungsi tembak jika waktu sudah mencapai interval
-            timer = 0f; // Reset timer
+            bulletSpawnPoint = transform.Find("BulletSpawnPoint");
+            if (bulletSpawnPoint == null)
+            {
+                Debug.LogWarning($"{name}: BulletSpawnPoint tidak ditemukan, membuat spawn point baru.");
+                GameObject spawnPoint = new GameObject("BulletSpawnPoint");
+                spawnPoint.transform.parent = transform;
+                spawnPoint.transform.localPosition = new Vector3(0, 1, 0);
+                bulletSpawnPoint = spawnPoint.transform;
+            }
         }
     }
 
-    // Fungsi untuk menembakkan Bullet
-    void FireBullet()
+    // Membuat Bullet baru untuk ObjectPool
+    private Bullet CreateBullet()
     {
-        Bullet bullet = objectPool.Get(); // Ambil Bullet dari pool
-        bullet.transform.position = bulletSpawnPoint.position; // Set posisi spawn Bullet
-        bullet.Fire(); // Tembak Bullet
+        if (bulletPrefab == null)
+        {
+            Debug.LogError($"{name}: BulletPrefab belum diatur!");
+            return null;
+        }
+
+        Bullet newBullet = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+        newBullet.SetObjectPool(objectPool);
+        return newBullet;
+    }
+
+    // Mengaktifkan Bullet untuk digunakan
+    private void OnGetBullet(Bullet bullet)
+    {
+        if (bullet != null)
+        {
+            bullet.gameObject.SetActive(true);
+            bullet.transform.position = bulletSpawnPoint.position; // Reset posisi bullet
+            bullet.transform.rotation = bulletSpawnPoint.rotation; // Reset rotasi bullet
+        }
+    }
+
+    // Menonaktifkan Bullet yang tidak digunakan
+    private void OnReleaseBullet(Bullet bullet)
+    {
+        if (bullet != null)
+        {
+            bullet.gameObject.SetActive(false);
+        }
+    }
+
+    // Menghancurkan Bullet jika ObjectPool penuh
+    private void OnDestroyBullet(Bullet bullet)
+    {
+        if (bullet != null)
+        {
+            Destroy(bullet.gameObject);
+        }
+    }
+
+    void Update()
+    {
+        timer += Time.deltaTime;
+
+        // Menembakkan Bullet pada interval waktu tertentu
+        if (timer >= shootIntervalInSeconds)
+        {
+            Shoot();
+            timer = 0;
+        }
+    }
+
+    public Bullet Shoot()
+    {
+        if (objectPool != null)
+        {
+            Bullet bulletInstance = objectPool.Get(); // Mengambil Bullet dari ObjectPool
+            return bulletInstance;
+        }
+        else
+        {
+            Debug.LogWarning($"{name}: ObjectPool tidak diinisialisasi.");
+            return null;
+        }
     }
 }
