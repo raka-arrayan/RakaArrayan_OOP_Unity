@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     //private set hanya bisa diatur (diubah) dari dalam kelas GameManager
     //get bersifat public, objek lain tetap bisa menggunakan LevelManager tetapi tidak bisa mengubahnya
 
+    public int points { get; private set; }  // Nilai poin pemain
+
 
     //kode ini menjaga agar GameManager tetap menjadi singleton
     //yaitu hanya ada satu instance yang aktif sepanjang permainan.
@@ -31,5 +33,18 @@ public class GameManager : MonoBehaviour
 
         DontDestroyOnLoad(this);
         DontDestroyOnLoad(GameObject.Find("Main Camera"));
+    }
+
+
+    // Fungsi untuk menambah poin
+    public void AddPoints(int amount)
+    {
+        points += amount;
+        // Panggil untuk memperbarui UI setelah poin bertambah
+        GameUIController uiController = FindObjectOfType<GameUIController>();
+        if (uiController != null)
+        {
+            uiController.UpdatePoints(points);
+        }
     }
 }

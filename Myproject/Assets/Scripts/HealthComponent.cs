@@ -27,4 +27,27 @@ public class HealthComponent : MonoBehaviour
     {
         return health;
     }
+
+//coba
+    public void SubtractAndUpdateUI(int amount)
+    {
+        health -= amount;
+
+        // Mendapatkan referensi GameUIController
+        GameUIController uiController = FindObjectOfType<GameUIController>();
+        if (uiController != null)
+        {
+            uiController.UpdateHealth(health);
+        }
+        else
+        {
+            Debug.LogWarning("GameUIController tidak ditemukan!");
+        }
+
+        if (health <= 0)
+        {
+            Destroy(gameObject);
+        }
+    }
+
 }

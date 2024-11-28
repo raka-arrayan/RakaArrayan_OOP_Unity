@@ -32,4 +32,28 @@ public class CombatManager : MonoBehaviour
             timer = 0;
         }
     }
+
+    void StartNewWave()
+    {
+        waveNumber++;
+
+        GameUIController uiController = FindObjectOfType<GameUIController>();
+        if (uiController != null)
+        {
+            uiController.UpdateWave(waveNumber); // Perbarui teks Wave di UI
+        }
+    }
+
+    void UpdateEnemiesCount()
+    {
+        int enemiesLeft = FindObjectsOfType<Enemy>().Length;
+
+        GameUIController uiController = FindObjectOfType<GameUIController>();
+        if (uiController != null)
+        {
+            uiController.UpdateEnemiesLeft(enemiesLeft); // Perbarui teks jumlah musuh di UI
+        }
+    }
+
+
 }

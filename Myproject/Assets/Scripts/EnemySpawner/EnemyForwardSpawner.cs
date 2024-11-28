@@ -31,7 +31,7 @@ public class EnemyForwardMover : MonoBehaviour
 
     public void Initialize(float movementSpeed)
     {
-        speed = movementSpeed;//// Menyimpan kecepatan yang diterima dari EnemyForwardSpawner
+        speed = movementSpeed;//Menyimpan kecepatan yang diterima dari EnemyForwardSpawner
     }
 
     void Update()

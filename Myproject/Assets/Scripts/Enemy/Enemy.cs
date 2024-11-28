@@ -37,4 +37,19 @@ public class Enemy : MonoBehaviour
     {
         Move();
     }
+
+    void OnDestroy()
+    {
+        GameUIController uiController = FindObjectOfType<GameUIController>();
+        if (uiController != null)
+        {
+            // Update points setelah musuh dihancurkan
+            uiController.UpdatePoints(uiController.GetPoints() + level);
+            uiController.DecreaseEnemiesLeft();
+        }
+        else
+        {
+            Debug.LogWarning("GameUIController tidak ditemukan saat musuh dihancurkan!");
+        }
+    }
 }
