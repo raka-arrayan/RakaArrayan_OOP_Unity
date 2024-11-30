@@ -40,12 +40,12 @@ public class Enemy : MonoBehaviour
 
     void OnDestroy()
     {
-        GameUIController uiController = FindObjectOfType<GameUIController>();
+        GameUIController uiController = FindObjectOfType<GameUIController>();//mencari objek di scene yang memiliki komponen GameUIController
         if (uiController != null)
         {
             // Update points setelah musuh dihancurkan
             uiController.UpdatePoints(uiController.GetPoints() + level);
-            uiController.DecreaseEnemiesLeft();
+            uiController.DecreaseEnemiesLeft();//memanggil  DecreaseEnemiesLeft() dari GameUIController
         }
         else
         {

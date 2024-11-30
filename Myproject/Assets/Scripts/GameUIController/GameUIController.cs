@@ -9,7 +9,7 @@ public class GameUIController : MonoBehaviour
     public TextMeshProUGUI enemiesLeftText; // Teks untuk Enemies Left
 
     private int points = 0;   // Poin awal
-    private int health = 100; // Kesehatan awal
+    private int health = 50; // health awal
     private int waveNumber = 1; // Nomor wave awal
     private int enemiesLeft = 10; // Jumlah musuh yang tersisa
 
@@ -27,14 +27,14 @@ public class GameUIController : MonoBehaviour
     {
         Debug.Log("GameUIController Awake dipanggil");
         // Pastikan GameUIController tidak dihancurkan saat scene berpindah
-        DontDestroyOnLoad(this.gameObject);
+        DontDestroyOnLoad(this.gameObject);// mempertahankan data UI antar scene.
     }
 
     // Perbarui teks Health
     public void UpdateHealth(int newHealth)
     {
-        health = newHealth; // Mengupdate nilai kesehatan
-        healthText.text = "Health: " + health.ToString(); // Menampilkan kesehatan di UI
+        health = newHealth; // Mengupdate nilai health 
+        healthText.text = "Health: " + health.ToString(); // Menampilkan health di UI
     }
 
     // Perbarui teks Points
@@ -61,7 +61,7 @@ public class GameUIController : MonoBehaviour
         return waveNumber;
     }
 
-    public void NextWave()
+    public void NextWave()//menaikkan nomor wave saat musuh di wave sebelumnya telah selesai.
     {
         waveNumber++;
         UpdateWave(waveNumber);
@@ -75,8 +75,8 @@ public class GameUIController : MonoBehaviour
         enemiesLeftText.text = "Enemies Left: " + enemiesLeft.ToString(); // Menampilkan musuh yang tersisa di UI
     }
 
-    // Memanggil fungsi ini saat musuh dihancurkan untuk memperbarui jumlah musuh
-    public void DecreaseEnemiesLeft()
+
+    public void DecreaseEnemiesLeft()//mengurangi jumlah musuh setiap kali satu musuh dikalahkan
     {
         if (enemiesLeft > 0)
         {

@@ -46,12 +46,12 @@ public class CombatManager : MonoBehaviour
 
     void UpdateEnemiesCount()
     {
-        int enemiesLeft = FindObjectsOfType<Enemy>().Length;
+        int enemiesLeft = FindObjectsOfType<Enemy>().Length;//Menghitung jumlah objek musuh yang ada di scene
 
         GameUIController uiController = FindObjectOfType<GameUIController>();
         if (uiController != null)
         {
-            uiController.UpdateEnemiesLeft(enemiesLeft); // Perbarui teks jumlah musuh di UI
+            uiController.UpdateEnemiesLeft(enemiesLeft); //// Memperbarui teks jumlah musuh yang tersisa di UI
         }
     }
 
